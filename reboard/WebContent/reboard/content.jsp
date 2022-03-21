@@ -52,8 +52,10 @@
 		<td  colspan=4 align="center">
 			<input type="button" value="댓글"
 				onClick ="location.href='replyForm.jsp?num=<%=num%>&page=<%=nowpage%>&ref=<%=ref%>&re_step=<%=re_step%>&re_level=<%=re_level%>'">
-			<input type="button" value="수정">
-			<input type="button" value="삭제">
+			<input type="button" value="수정" 
+				onClick="location.href='updateForm.jsp?num=<%=num%>&page=<%=nowpage%>'">
+			<input type="button" value="삭제" 
+				onClick="location.href='deleteForm.jsp?num=<%=num%>&page=<%=nowpage%>'">
 			<input type="button" value="목록" 
 				onClick="location.href='list.jsp?page=<%=nowpage%>'">
 		</td>

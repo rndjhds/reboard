@@ -251,8 +251,113 @@ public class BoardDBBean {
 	}
 	
 	
+	// 수정 폼 : 데이터 1개 추출
+	public BoardDataBean getContent(int num) {
+		BoardDataBean board = new BoardDataBean();
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			con = getConnection();
+			
+			String sql = "select * from board where num=?";
+			
+			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			rs = pstmt.executeQuery();	// SQL문 실행
+			
+			if(rs.next()) {
+				board.setNum(rs.getInt("num"));
+				board.setWriter(rs.getString("writer"));
+				board.setEmail(rs.getString("email"));
+				board.setSubject(rs.getString("subject"));
+				board.setPasswd(rs.getString("passwd"));
+				board.setReg_date(rs.getTimestamp("reg_date"));
+				board.setReadcount(rs.getInt("readcount"));
+				board.setRef(rs.getInt("ref"));
+				board.setRe_level(rs.getInt("re_level"));
+				board.setRe_step(rs.getInt("re_step"));
+				board.setContent(rs.getString("content"));
+				board.setIp(rs.getString("ip"));
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if(rs!=null)try {rs.close();}catch (Exception e) {}
+			if(pstmt!=null)try {pstmt.close();}catch (Exception e) {}
+			if(con!=null)try {con.close();}catch (Exception e) {}
+		}
+		return board;
+		
+	}
 	
+	// 글수정
+	public int update(BoardDataBean board) {
+		int result = 0;
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			con = getConnection();
+			
+			String sql = "update board set writer=?,email=?,subject=?,";
+				   sql += "content=? where num=?";
+			
+			pstmt = con.prepareStatement(sql);
+				   
+			pstmt.setString(1, board.getWriter());
+			pstmt.setString(2, board.getEmail());
+			pstmt.setString(3, board.getSubject());
+			pstmt.setString(4, board.getContent());
+			pstmt.setInt(5, board.getNum());
+			result = pstmt.executeUpdate();		//SQL문 실행
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if(pstmt!=null)try {pstmt.close();}catch (Exception e) {}
+			if(con!=null)try {con.close();}catch (Exception e) {}
+		}
+		
+		return result;
+	}
 	
+	// 글삭제
+	public int delete(BoardDataBean board) {
+		int result = 0;
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		String sql = "";
+		
+		try {
+			con = getConnection();
+			
+			if(board.getRe_level() == 0) {	// 원문
+				sql = "update board set subject=?,content=? where num=?";
+				
+				pstmt = con.prepareStatement(sql);
+				pstmt.setString(1, "관리자에 의해서 삭제됨");
+				pstmt.setString(2, " ");
+				pstmt.setInt(3, board.getNum());
+			}else {	// 댓글
+				sql = "delete from board where num=?";
+				
+				pstmt = con.prepareStatement(sql);
+				pstmt.setInt(1, board.getNum());
+			}
+			result = pstmt.executeUpdate();	// SQL문 실행
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if(pstmt!=null)try {pstmt.close();}catch (Exception e) {}
+			if(con!=null)try {con.close();}catch (Exception e) {}
+		}
+		
+		return result;
+	}
 	
 	
 	
